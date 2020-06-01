@@ -7,6 +7,8 @@ import (
     "os"
 )
 
+var indexHashMap map[string]int = make(map[string]int)
+
 func check(e error) {
     if e != nil {
         panic(e)
@@ -36,9 +38,12 @@ func set(key string, value string) {
     //message := []byte()
     f, err := os.OpenFile("database.mars", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     check(err)
+    fi, err := f.Stat()
+    check(err)
     defer f.Close()
 
     _, errWrite := f.WriteString(fmt.Sprintf("%s, %s\n", key, value))
+    indexKey(key,  (int(fi.Size()) + len(value)))
     check(errWrite)
 }
 
@@ -60,4 +65,8 @@ func get(key string) (string){
         check(err)
     }
     return ""
+}
+
+func indexKey(key string, offSet int) {
+    indexHashMap[key] = offSet
 }
