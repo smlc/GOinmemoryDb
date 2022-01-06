@@ -43,7 +43,7 @@ func set(key string, value string) {
     defer f.Close()
 
     _, errWrite := f.WriteString(fmt.Sprintf("%s, %s\n", key, value))
-    indexKey(key,  (int(fi.Size()) + len(value)))
+    indexKey(key,  (int(fi.Size())))
     check(errWrite)
 }
 
@@ -52,6 +52,9 @@ func get(key string) (string){
     file, err := os.Open("database.mars")
     check(err)
     defer file.Close()
+    
+    offSet := indexHashMap[key]
+    file.Seek(int64(offSet), 0)
 
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
